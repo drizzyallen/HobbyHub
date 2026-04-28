@@ -3,6 +3,7 @@ import supabase from "../dataBase";
 
 export default function CreatePost() {
   const [image, setImage] = useState(null);
+  const [title, setTitle] = useState("");
   const [caption, setCaption] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -16,8 +17,8 @@ export default function CreatePost() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!image || !caption) {
-      setMessage("Please provide both an image and a caption.");
+    if (!image || !caption || !title) {
+      setMessage("Please provide an image, a title, and a caption.");
       return;
     }
 
@@ -33,11 +34,12 @@ export default function CreatePost() {
 
       const { data, error } = await supabase
         .from('posts')
-        .insert([{ image_url: uploadData.path, caption: caption }]);
+        .insert([{ image: uploadData.path, caption: caption, Title: title }]);
         
       if (error) throw error;
 
       setMessage("Post created successfully!");
+      setTitle("");
       setCaption("");
       setImage(null);
       document.getElementById("image").value = "";
@@ -65,6 +67,19 @@ export default function CreatePost() {
             accept="image/*"
             onChange={handleImageChange}
             required
+          />
+        </div>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <label htmlFor="title">Title:</label>
+          <input
+            type="text"
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter a title..."
+            required
+            style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
           />
         </div>
         
